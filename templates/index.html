@@ -83,7 +83,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                          </div>
                          <div class="pic_info">
                              <h2>Please enter your email and password below:<br><br></h2>
-														 <form class="form-inline mt-2 mt-md-0" action="/login" method="POST">
+														 <form class="form-inline mt-2 mt-md-0" action="login" method="POST">
 															 <input class="form-control mr-sm-2" type="username" placeholder="" name="email"><br><br>
 															 <input class="form-control mr-sm-2" type="password" placeholder=""  name="password"><br><br>
 															 <button class="btn btn-lg btn-primary" type="submit" value="Login">Login</button>
@@ -113,7 +113,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 			 </div>
         {% if session['accountID'] %}
             <div class="text-center">
-                <a href="/logout" class="text-danger">
+                <a href="logout" class="text-danger">
                     <span>LOGOUT</span> <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
                 </a>
             </div>

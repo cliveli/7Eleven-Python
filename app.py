@@ -18,6 +18,8 @@
 '''
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+from werkzeug.wsgi import DispatcherMiddleware
+from werkzeug.serving import run_simple
 
 import sys
 import os
@@ -225,6 +227,9 @@ def getKey(encryptedKey):
     i = i + 1
   return key
 
+# Found in au.com.seveneleven.y.h - hard coded for now
+encryption_key = base64.b64decode("g2JZ9nYmS3EhNiVTWyG5xbqGsqq4QFiNi6GLLbVhRbw=")
+
 # Generate the tssa string
 def generateTssa(URL, method, payload = None, accessToken = None):
 
@@ -233,16 +238,17 @@ def generateTssa(URL, method, payload = None, accessToken = None):
     # Get a timestamp and a UUID
     timestamp = int(time.time())
     uuidVar   = str(uuid.uuid4())
-    # Join the variables into 1 string
-    str3      = key + method + URL + str(timestamp) + uuidVar
+     # Join the variables into 1 string
+    str3      = "yvktroj08t9jltr3ze0isf7r4wygb39s" + method + URL + str(timestamp) + uuidVar
     # If we have a payload to encrypt, then we encrypt it and add it to str3
     if(payload):
         payload = base64.b64encode(hashlib.md5(payload).digest())
         str3   += payload
-    signature = base64.b64encode(hmac.new(key2, str3, digestmod=hashlib.sha256).digest())
 
+    signature = base64.b64encode(hmac.new(encryption_key, str3, digestmod=hashlib.sha256).digest())
     # Finish building the tssa string
-    tssa = "tssa 4d53bce03ec34c0a911182d4c228ee6c:" + signature + ":" + uuidVar + ":" + str(timestamp)
+    tssa = "tssa yvktroj08t9jltr3ze0isf7r4wygb39s:" + signature + ":" + uuidVar + ":" + str(timestamp)
+ 
     # If we have an access token append it to the tssa string
     if(accessToken):
         tssa += ":" + accessToken
@@ -544,6 +550,31 @@ def lockin():
         session['ErrorMessage'] = "Unknown error occured. Please try again!"
         return redirect(url_for('index'))
 
+class ReverseProxied(object):
+
+    def __init__(self, app, script_name=None, scheme=None, server=None):
+        self.app = app
+        self.script_name = script_name
+        self.scheme = scheme
+        self.server = server
+
+    def __call__(self, environ, start_response):
+        script_name = environ.get('HTTP_X_SCRIPT_NAME', '') or self.script_name
+        if script_name:
+            environ['SCRIPT_NAME'] = script_name
+            path_info = environ['PATH_INFO']
+            if path_info.startswith(script_name):
+                environ['PATH_INFO'] = path_info[len(script_name):]
+        scheme = environ.get('HTTP_X_SCHEME', '') or self.scheme
+        if scheme:
+            environ['wsgi.url_scheme'] = scheme
+        server = environ.get('HTTP_X_FORWARDED_SERVER', '') or self.server
+        if server:
+            environ['HTTP_HOST'] = server
+        return self.app(environ, start_response)
+
+
+
 if __name__ == '__main__':
     # Try and open stores.json
     if(os.path.isfile('./stores.json')):
@@ -569,4 +600,8 @@ if __name__ == '__main__':
             f.write(getStores())
 
     app.secret_key = os.urandom(12)
-    app.run(host='0.0.0.0')
+
+    reveredPath = os.getenv("REVERSEDPATH")
+    if (None != reveredPath):
+        app.wsgi_app = ReverseProxied(app.wsgi_app, script_name=reveredPath)
+    app.run(debug=True,host='0.0.0.0')
