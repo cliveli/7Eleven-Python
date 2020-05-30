@@ -20,8 +20,6 @@
 
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from werkzeug import DispatcherMiddleware
-from werkzeug.serving import run_simple
 # Optional Security
 # Uncomment Basic Auth section to enable basic authentication so users will be prompted a username and password before seeing the website.
 #from flask_basicauth import BasicAuth
