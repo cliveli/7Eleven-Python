@@ -521,4 +521,4 @@ if __name__ == '__main__':
     reveredPath = os.getenv("REVERSEDPATH")
     if (None != reveredPath):
         app.wsgi_app = ReverseProxied(app.wsgi_app, script_name=reveredPath)
-    app.run(debug=True,host='0.0.0.0')
+    app.run(debug=False,host='0.0.0.0')
