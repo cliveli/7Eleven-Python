@@ -1,7 +1,11 @@
 *.pyc
 *.pyo
 *.json
-
-# local config
+/__pycache__/*
 settings.py
+<<<<<<< HEAD
 .env
+=======
+settings.py
+autolock.ini
+>>>>>>> 0fffe9510caf9ed466f345b9c2c7648bac534aa0

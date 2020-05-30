@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 # API_KEY: Google Maps with Geocoding API Key
 # Google Maps API is used to Geocode a Postcode to a logitude and latitude
 # To use the API a private API key is required.
@@ -10,6 +12,32 @@
 
 API_KEY=""
 
+# TZ: All times are displayed using the chosen timezone. Choices for Australia are:
+# Australia/ACT
+# Australia/Adelaide
+# Australia/Brisbane
+# Australia/Broken_Hill
+# Australia/Canberra
+# Australia/Currie
+# Australia/Darwin
+# Australia/Eucla
+# Australia/Hobart
+# Australia/LHI
+# Australia/Lindeman
+# Australia/Lord_Howe
+# Australia/Melbourne
+# Australia/NSW
+# Australia/North
+# Australia/Perth
+# Australia/Queensland
+# Australia/South
+# Australia/Sydney
+# Australia/Tasmania
+# Australia/Victoria
+# Australia/West
+# Australia/Yancowinna
+TZ="UTC"
+
 # BASE_URL: 7-11 Mobile Application API End Point
 BASE_URL="https://711-goodcall.api.tigerspike.com/api/v1/"
 
@@ -19,8 +47,12 @@ PRICE_URL="https://projectzerothree.info/api.php?format=json"
 # Device name - Samsung Galaxy S10. You can change this to any device you want.
 DEVICE_NAME="SM-G973FZKAXSA"
 
-# Device name - Samsung Galaxy S10. You can change this to any device you want.
+# OS version
 OS_VERSION="Android 9.0.0"
 
 # App version
-APP_VERSION="1.10.0.2000"
+APP_VERSION="1.10.0.2044"
+
+# Device id - A 16 character hexadecimal device identifier. You can change this to your own device ID
+# if you know it, otherwise a random one will be generated
+DEVICE_ID=""

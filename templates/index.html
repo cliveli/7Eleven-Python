@@ -10,6 +10,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <title>7Eleven Fuel Locker</title>
 <!-- for-mobile-apps -->
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- //for-mobile-apps -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -24,25 +25,75 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 		$("#manual").fadeOut("fast");
 	   $("#aauto").click(function(event){
 				$("#manual").hide();
+				$("#settings").hide();
 				$("#buttonpressed").hide();
+				$("#credits").hide();
 	      $("#automatic").fadeIn("fast");
 	   });
 	   $("#aman").click(function(event){
 	       $("#automatic").hide();
+				 $("#settings").hide();
 				 $("#buttonpressed").hide();
+				 $("#credits").hide();
 	       $("#manual").fadeIn("fast");
+	   });
+	   $("#aset").click(function(event){
+	       $("#automatic").hide();
+				 $("#manual").hide();
+				 $("#buttonpressed").hide();
+				 $("#credits").hide();
+	       $("#settings").fadeIn("fast");
+	   });
+	   $("#acredits").click(function(event){
+	       $("#automatic").hide();
+				 $("#manual").hide();
+				 $("#buttonpressed").hide();
+				 $("#settings").hide();
+	       $("#credits").fadeIn("fast");
 	   });
 		 $(".btn").click(function(event){
 	       $("#automatic").hide();
 			   $("#manual").hide();
+			   $("#settings").hide();
+			   $("#credits").hide();
 			   $(".automanual").hide();
 	       $("#buttonpressed").fadeIn("fast");
 		 });
 	});
+
+var lookupTable = {
+	0: function() {
+		return "No fuel type";
+	},
+  52: function() {
+    return "Special Unleaded";
+  },
+  53: function() {
+    return "Special Diesel";
+  },
+  54: function() {
+    return "Autogas";
+  },
+  55: function() {
+    return "Extra 95";
+  },
+  56: function() {
+    return "Supreme+ 98";
+  },
+  57: function() {
+    return "Special E10";
+  }
+};
+
+var fueltype = lookupTable[{% if session['fuelLockType'] %} {{ session['fuelLockType'] }} {% else %} 0 {% endif%}]()
+
+function convertfueltype() {
+document.getElementById("fueltypeconverted").innerHTML = fueltype;
+}
 </script>
 
 </head>
-<body>
+<body onload="convertfueltype();">
 <!-- main -->
 <div class="audio-main w3ls">
 	<h1>7Eleven Fuel Locker</h1>
@@ -57,23 +108,27 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                          <div class="pic_info">
                              <h2>Welcome, {{ session['firstName'] }}.</h2>
                              <h3>Your current account balance is: <strong class='bold_balance'>${{ session['cardBalance'] }}.</strong></h3>
+
+                            {% if session['cardBalance'] | float > 0 %}
+                                <div class="card-balance-warning">
+                                    As of March 2020 you no longer require balance on your account to lock in fuel. Feel free to use up your balance when filling up, or in-store.
+                                </div>
+                            {% endif %}
+
 														 {% if session['fuelLockActive'][0] %}
                              <br><h4 class='bold_balance'>Current fuel lock:</h4>
-                             <h3>Fuel lock expires: <strong class='bold_balance'>{{ session['fuelLockExpiry'] }}</strong></h3>
-                             <h3>You have <strong class='bold_balance'>{{ session['fuelLockLitres'] }}</strong> litres locked in.</h3>
-                             <h3>Cents per litre: <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong></h3>
+                             <br><h3>Expires: <strong class='bold_balance'>{{ session['fuelLockExpiry'] }}</strong></h3>
+			     <br><h3>You have <strong class='bold_balance'>150</strong> litres of <strong class='bold_balance'><span id="fueltypeconverted"></span></strong> locked in at <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong> c/L.</h3>
 														 {% endif %}
 														 {% if session['fuelLockActive'][1] %}
                              <br><h4 class='bold_balance'>Previous fuel lock:</h4>
-                             <h3>Fuel lock expired: <strong class='bold_balance'>{{ session['fuelLockExpiry'] }}</strong></h3>
-                             <h3>Could have locked: <strong class='bold_balance'>{{ session['fuelLockLitres'] }}</strong> litres.</h3>
-                             <h3>Cents per litre: <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong></h3>
+                             <h3>Expired: <strong class='bold_balance'>{{ session['fuelLockExpiry'] }}</strong></h3>
+                             <h3>You could have purchased up to <strong class='bold_balance'>150</strong> litres at <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong> c/L.</h3>
 														 {% endif %}
 														 {% if session['fuelLockActive'][2] %}
                              <br><h4 class='bold_balance'>Previous fuel lock:</h4>
                              <h3>Redeemed: <strong class='bold_balance'>{{ session['fuelLockRedeemed'] }}</strong></h3>
-                             <h3>You locked in <strong class='bold_balance'>{{ session['fuelLockLitres'] }}</strong> litres.</h3>
-                             <h3>Cents per litre: <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong></h3>
+                             <h3>You purchased up to <strong class='bold_balance'>150</strong> litres at <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong> c/L.</h3>
 														 {% endif %}
                          </div>
                          <div class="clear"></div>
@@ -84,8 +139,10 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                          <div class="pic_info">
                              <h2>Please enter your email and password below:<br><br></h2>
 														 <form class="form-inline mt-2 mt-md-0" action="login" method="POST">
-															 <input class="form-control mr-sm-2" type="username" placeholder="" name="email"><br><br>
-															 <input class="form-control mr-sm-2" type="password" placeholder=""  name="password"><br><br>
+															 <input class="form-control mr-sm-2" type="text" placeholder="Email" name="email"><br><br>
+															 <input class="form-control mr-sm-2" type="password" placeholder="Password"  name="password"><br><br>
+															 <input class="form-control mr-sm-2" type="text" placeholder="Device ID (can be blank)" value="{{ device_id }}" maxlength="16"  name="device_id"><br><br>
+															 <label><input type="checkbox" name="auto_lockin"> Enable auto lock in</label><br><br>
 															 <button class="btn btn-lg btn-primary" type="submit" value="Login">Login</button>
 														 </form>
                          </div>
@@ -102,11 +159,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 						<h3>{{ session['SuccessMessage'] }}</h3>
 						<h3><a href="?action=refresh">Refresh</a></h3>
 					 {% elif session['firstName'] %}
-
-					  {% if session['fuelLockActive'][0] %}
-						{% else %}
 							{% block content %}{% endblock %}
-						{% endif %}
 					 {% endif %}
 
 				 </div>
